@@ -22,6 +22,7 @@ data/processed/
 *.xtc
 *.trr
 *.gro
+*.tpr
 
 # Models
 models/
