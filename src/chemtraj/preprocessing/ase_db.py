@@ -3,12 +3,16 @@ import numpy as np
 from ase import Atoms 
 from ase.io import write
 from pathlib import Path 
+from chemtraj.preprocessing.selection import select_protein
 
 
 # Getting the base data into a usable format
 # Labelling with criterion and converting to extxyz 
 
 OUTFILE = Path("data/processed/metad_10_labeled.extxyz")
+TOP = "data/unprocessed/metad_10.gro"
+TRAJ = "data/unprocessed/metad_10.xtc" 
+
 
 def label_criterion(universe) -> str: 
     """ Criterion is the distance between the S atoms 
@@ -61,8 +65,9 @@ def atomname_to_element(name: str) -> str:
 
     raise ValueError(f"Cannot infer element name from {name}")
 
-u = mda.Universe("data/unprocessed/metad_10.gro", "data/unprocessed/metad_10.xtc")
-protein_system = u.select_atoms("not resname SOL and not name LA")
+u = mda.Universe(TOP, TRAJ)
+
+protein_system = select_protein(TOP, TRAJ) 
 
 print(u.atoms.n_atoms)
 print(protein_system.atoms.n_atoms)
