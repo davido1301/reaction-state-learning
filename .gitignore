@@ -27,8 +27,6 @@ data/processed/
 # Models
 models/
 
-# Results
-results/
 
 # Logs
 *.log
