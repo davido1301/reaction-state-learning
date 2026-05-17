@@ -10,6 +10,7 @@ from MDAnalysis.analysis import pca, align
 from chemtraj.preprocessing.selection import select_protein 
 
 from ase.io import read
+from chemtraj.analysis.pca import make_pca_df, cumulated_pca_comp_plot, pca_pair_plot, get_cosine_content
 
 DB = "data/processed/metad_10_labeled.extxyz"
 
@@ -59,13 +60,10 @@ labels_df = pd.DataFrame(rows)
 print(labels_df.head())
 label = labels_df["label"]
 
-pca_df = pd.DataFrame({
-                      "frame_id": np.arange(transformed.shape[0]),
-                      "PC1": transformed[:, 0],
-                      "PC2": transformed[:, 1],
-                      "PC3": transformed[:, 2],
-                      "label": label
-}) 
+pca_df = make_pca_df(transformed) 
+pca_pair_plot(pca_df, label) 
+
+pca_df["label"] = label
 
 
 unique_labels = sorted(pca_df["label"].dropna().unique())
@@ -85,4 +83,7 @@ plot_path = result_dir / "pca_comp_over_label.png"
 plt.savefig(plot_path, dpi=300)
 
 
+for i in range(3):
+    cc = pca.cosine_content(transformed, i)    
+    print(f"Cosine content for {i+1} = {cc:.3f}")
 
