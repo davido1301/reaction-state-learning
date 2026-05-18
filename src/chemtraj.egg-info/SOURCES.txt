@@ -4,5 +4,8 @@ src/chemtraj.egg-info/PKG-INFO
 src/chemtraj.egg-info/SOURCES.txt
 src/chemtraj.egg-info/dependency_links.txt
 src/chemtraj.egg-info/top_level.txt
+src/chemtraj/analysis/filter.py
+src/chemtraj/analysis/pca.py
 src/chemtraj/preprocessing/ase_db.py
 src/chemtraj/preprocessing/selection.py
+src/chemtraj/representations/internal_coord.py
