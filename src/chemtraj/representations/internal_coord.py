@@ -1,17 +1,24 @@
 import MDAnalysis as mda 
 import numpy as np 
-from MDAnalysis.analysis import dihedrals, distances
+from MDAnalysis.analysis.dihedrals import Dihedral 
+
 from sklearn.decomposition import PCA 
 
 
-def compute_bat_coordinates(atomgroup): 
-    """ Compute BAT Internal Coordinates from MDAnalysis AtomGroup 
-        Returns:
-            X : np.ndarray - internal coordinate rep
-        feature_names : list[str] - names corresponding to X columns
-        """ 
 
-   pass 
+def get_dihedrals(universe, ids):
+    """ MDA Universe + ids of residues 
+        --> list Dihedrals 
+    """ 
 
+    phi_groups = []
+    for id in ids:
+        res = universe.residues[id]
+        ag = res.phi_selection() 
+        if ag is not None:
+            phi_groups.append(ag)
 
+    phi = Dihedral(phi_groups).run()
+    phi_angles = phi.results.angles 
+    return phi_angles
 

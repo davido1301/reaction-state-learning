@@ -9,7 +9,7 @@ from ase.io import read
 from chemtraj.preprocessing.selection import select_protein
 from chemtraj.analysis.filter import residues_near_reacting_atoms 
 from chemtraj.analysis.pca import make_pca_df, pca_pair_plot
-
+from chemtraj.representations.internal_coord import get_dihedrals
 DB = "data/processed/metad_10_labeled.extxyz"
 TOP = "data/unprocessed/metad_10.gro"
 TRAJ = "data/unprocessed/metad_10.xtc" 
@@ -41,6 +41,11 @@ phi = Dihedral(phi_groups).run()
 phi_angles = phi.results.angles 
 
 
+test = get_dihedrals(universe, id_res)
+print(test[0])
+
+
+exit()
 X = np.column_stack([
     np.sin(phi_angles),
     np.cos(phi_angles),
