@@ -67,6 +67,13 @@ for resid, phi_angle_value in zip(id_res, phi_angles.T):
 
 phi_cols = [col for col in labels_df.columns if col.startswith("phi_res")]
 
+correlation_matrix = labels_df.corr(numeric_only=True)
+plt.figure(figsize=(8,6)) 
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
+plt.title("Corr Heatmap")
+plt.show()
+exit()
+
 for feature in phi_cols:
     plt.figure(figsize=(6,4))
     sns.histplot(data=labels_df,
