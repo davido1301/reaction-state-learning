@@ -8,3 +8,5 @@
   might not be represented well enough in the umbrella sampling
 - it is kind of logical that if metadynamics with a set of CVs does not work,
   umbrella sampling will not work either
+
+Started US for 1 ns from reactant, TS and product
