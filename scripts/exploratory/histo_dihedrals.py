@@ -60,7 +60,8 @@ label = labels_df["label"]
 print(phi_angles.shape)
 print(len(labels_df))
 print(len(id_res))
-
+print(id_res[0]) 
+exit()
 
 for resid, phi_angle_value in zip(id_res, phi_angles.T):
     labels_df[f"phi_res_{resid}"] = phi_angle_value 
