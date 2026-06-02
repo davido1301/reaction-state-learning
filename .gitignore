@@ -5,6 +5,8 @@ __pycache__/
 *.pyd
 .venv/
 venv/
+*.npz
+*.parquet
 
 # Jupyter
 .ipynb_checkpoints/
