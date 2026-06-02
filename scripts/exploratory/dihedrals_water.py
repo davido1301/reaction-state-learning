@@ -9,11 +9,11 @@ from pathlib import Path
 
 RESULTS = Path("src/chemtraj/results/dihedrals_and_SS_dist/")
 
-out_parquet = RESULTS / "dihedrals_and_SS_dist.parquet"
+out_parquet = RESULTS / "dihedrals_and_SS_dist_1.parquet"
 
 df = pd.read_parquet(out_parquet)
 
-data = np.loadtxt("data/processed/water_dists_10.out", skiprows=1)
+data = np.loadtxt("data/processed/water_dists_1.out", skiprows=1)
 cym_water_dist = data[:, 1]
 s1_water_dist = data[:, 2]
 s2_water_dist = data[:, 3]
