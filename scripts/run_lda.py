@@ -1,44 +1,47 @@
 import MDAnalysis as mda 
-from ase.io import read 
-from sklearn.model_selection import train_test_split
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
-import seaborn as sns 
-import matplotlib.pyplot as plt
+from MDAnalysis.analysis.dihedrals import Dihedral
+import matplotlib.pyplot as plt 
 import pandas as pd
-import numpy as np
-
-from chemtraj.utils.io import dataframe_from_extxyz 
-from chemtraj.analysis.filter import residues_near_reacting_atoms 
+import numpy as np 
+from sklearn.preprocessing import StandardScaler 
+from ase.io import read
+from sklearn.preprocessing import LabelEncoder
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.model_selection import train_test_split
 from chemtraj.preprocessing.selection import select_protein, extract_res_id_and_name
+from chemtraj.analysis.filter import residues_near_reacting_atoms 
+from chemtraj.analysis.pca import make_pca_df, pca_pair_plot
 from chemtraj.representations.internal_coord import get_dihedrals
+from chemtraj.utils.io import dataframe_from_extxyz
 
+
+
+# For that .yaml config missing needs to be added later on see issues
 DB = "data/processed/metad_10_labeled.extxyz"
 TOP = "data/unprocessed/metad_10.gro"
 TRAJ = "data/unprocessed/metad_10.xtc" 
+REACTIVE_SELECTION = "index 24 59 529" 
 
+universe = mda.Universe(TOP,TRAJ)
+protein_system = select_protein(TOP,TRAJ)
 
-df = dataframe_from_extxyz(DB) 
-
-universe = mda.Universe(TOP,TRAJ) 
-protein_system = select_protein(TOP, TRAJ) 
-
-
-
-ress = residues_near_reacting_atoms(
-    universe=universe,
-    reactive_selection="index 24 59 526"
+residues = residues_near_reacting_atoms(
+        universe=universe,
+        reactive_selection=REACTIVE_SELECTION
 )
 
-id_res, res_names = extract_res_id_and_name(ress)
-phi_angles = get_dihedrals(universe, id_res)
+resid, resname = extract_res_id_and_name(residues)
 
-for resid, resname, phi_angle_value in zip(id_res, res_names, phi_angles.T):
-    df[f"phi_res_{resid}_{resname}"] = phi_angle_value 
+phi_angles = get_dihedrals(universe, resid) 
 
-phi_coles = [col for col in df.columns if col.startswith("phi_res")] 
+# constructing df 
+df = dataframe_from_extxyz(DB) 
+for residx, resnamex, phi_angle_value in zip(resid, resname, phi_angles.T):
+    df[f"phi_res_{residx}_{resnamex}"] = phi_angle_value 
 
+phi_columns = [col for col in df.columns if col.startswith("phi_res_")]
+
+# must go into lda file
 
 X = df.iloc[:, 2:35].values # wonky
 y = df.iloc[:, 1].values
@@ -93,7 +96,3 @@ lda2_weights = pd.Series(
 ).sort_values(key=abs, ascending=False)
 
 print("LDA2 weights", lda2_weights)
-exit()
-plt.savefig("/home/davido/Projects/HiWi_Maike/reaction-state-learning/src/chemtraj/results/lda/lda_filter8.png", dpi=300)
-
-

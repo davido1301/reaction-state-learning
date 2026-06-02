@@ -14,33 +14,15 @@ from chemtraj.analysis.filter import residues_near_reacting_atoms
 from chemtraj.preprocessing.selection import select_protein, extract_res_id_and_name
 from chemtraj.representations.internal_coord import get_dihedrals
 
-DB = "data/processed/metad_10_labeled.extxyz"
-TOP = "data/unprocessed/metad_10.gro"
-TRAJ = "data/unprocessed/metad_10.xtc" 
 
+df = pd.read_parquet("/home/davido/Projects/HiWi_Maike/reaction-state-learning/data/processed/features/phi_dihedrals_all_metad.parquet") 
 
-df = dataframe_from_extxyz(DB) 
-
-universe = mda.Universe(TOP,TRAJ) 
-protein_system = select_protein(TOP, TRAJ) 
-
-
-
-ress = residues_near_reacting_atoms(
-    universe=universe,
-    reactive_selection="index 24 59 526"
-)
-
-id_res, res_names = extract_res_id_and_name(ress)
-phi_angles = get_dihedrals(universe, id_res)
-
-for resid, resname, phi_angle_value in zip(id_res, res_names, phi_angles.T):
-    df[f"phi_res_{resid}_{resname}"] = phi_angle_value 
 
 phi_coles = [col for col in df.columns if col.startswith("phi_res")] 
 
+print(len(phi_coles))
 
-X = df.iloc[:, 2:35].values # wonky
+X = df.iloc[:, 2:75].values # wonky
 y = df.iloc[:, 1].values
 
 le = LabelEncoder()
@@ -93,7 +75,6 @@ lda2_weights = pd.Series(
 ).sort_values(key=abs, ascending=False)
 
 print("LDA2 weights", lda2_weights)
-exit()
-plt.savefig("/home/davido/Projects/HiWi_Maike/reaction-state-learning/src/chemtraj/results/lda/lda_filter8.png", dpi=300)
+plt.savefig("/home/davido/Projects/HiWi_Maike/reaction-state-learning/src/chemtraj/results/lda/all_metad/lda_filter8_allmetad.png", dpi=300)
 
 
