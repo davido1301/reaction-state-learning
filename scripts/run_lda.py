@@ -15,6 +15,7 @@ from chemtraj.representations.internal_coord import get_dihedrals
 from chemtraj.utils.io import dataframe_from_extxyz, read_config
 import yaml
 import seaborn as sns
+from chemtraj.analysis.lda import run_lda
 
 
 
@@ -40,29 +41,22 @@ for residx, resnamex, phi_angle_value in zip(resid, resname, phi_angles.T):
 
 phi_columns = [col for col in df.columns if col.startswith("phi_res_")]
 
-# must go into lda file
 
+# Selection for LDA atm 
 X = df.iloc[:, 2:35].values # wonky
 y = df.iloc[:, 1].values
 
 le = LabelEncoder()
-y = le.fit_transform(y) 
-
+y = le.fit_transform(y)
 # can catch artifacts otherwise bc periodic 
-
 X_rad = np.deg2rad(X) 
 X_sin = np.sin(X_rad) 
 X_cos = np.cos(X_rad) 
-
 X_trig = np.concatenate([X_sin, X_cos], axis=1) 
 
+lda, X_test, X_train, y_train = run_lda(X_trig, y)
 
 
-X_train, X_test, y_train, y_test = train_test_split(X_trig,y, test_size=0.2) 
-
-lda = LinearDiscriminantAnalysis(n_components=2) 
-X_train = lda.fit_transform(X_train, y_train) 
-X_test = lda.transform(X_test) 
 
 
 
