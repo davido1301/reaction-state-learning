@@ -12,30 +12,29 @@ from chemtraj.preprocessing.selection import select_protein, extract_res_id_and_
 from chemtraj.analysis.filter import residues_near_reacting_atoms 
 from chemtraj.analysis.pca import make_pca_df, pca_pair_plot
 from chemtraj.representations.internal_coord import get_dihedrals
-from chemtraj.utils.io import dataframe_from_extxyz
+from chemtraj.utils.io import dataframe_from_extxyz, read_config
+import yaml
+import seaborn as sns
 
 
 
-# For that .yaml config missing needs to be added later on see issues
-DB = "data/processed/metad_10_labeled.extxyz"
-TOP = "data/unprocessed/metad_10.gro"
-TRAJ = "data/unprocessed/metad_10.xtc" 
-REACTIVE_SELECTION = "index 24 59 529" 
 
-universe = mda.Universe(TOP,TRAJ)
-protein_system = select_protein(TOP,TRAJ)
-
+PATH_YAML = "src/chemtraj/configs/test.yaml"
+config = read_config(PATH_YAML)
+universe = mda.Universe(config.top,config.traj)
+protein_system = select_protein(config.top,config.traj)
 residues = residues_near_reacting_atoms(
         universe=universe,
-        reactive_selection=REACTIVE_SELECTION
+        reactive_selection=config.reactive_selection,
 )
-
 resid, resname = extract_res_id_and_name(residues)
 
 phi_angles = get_dihedrals(universe, resid) 
 
 # constructing df 
-df = dataframe_from_extxyz(DB) 
+df = dataframe_from_extxyz(config.db) 
+
+
 for residx, resnamex, phi_angle_value in zip(resid, resname, phi_angles.T):
     df[f"phi_res_{residx}_{resnamex}"] = phi_angle_value 
 
@@ -80,8 +79,8 @@ plt.show()
 
 
 phi_cols_trig = (
-    [f"{col}_sin" for col in phi_coles] + 
-    [f"{col}_cos" for col in phi_coles]
+    [f"{col}_sin" for col in phi_columns] + 
+    [f"{col}_cos" for col in phi_columns]
 )
 lda1_weights = pd.Series(
     lda.scalings_[:, 0],
