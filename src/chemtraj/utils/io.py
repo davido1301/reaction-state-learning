@@ -12,6 +12,7 @@ class Config:
     db: Path 
     reactive_selection: str | None = None
     parquet_path: Path | None = None 
+    results_dir: Path | None = None 
 
 def read_config(yaml_path: str | Path) -> Config:
     yaml_path = Path(yaml_path) 
@@ -38,7 +39,8 @@ def read_config(yaml_path: str | Path) -> Config:
         top=Path(conf["TOP"]),
         traj=Path(conf["TRAJ"]),
         reactive_selection=conf["REACTIVE_SELECTION"] if conf.get("REACTIVE_SELECTION") else None,
-        parquet_path=Path(conf["PARQUET_PATH"]) if conf.get("PARQUET_PATH") else None
+        parquet_path=Path(conf["PARQUET_PATH"]) if conf.get("PARQUET_PATH") else None,
+        results_dir=Path(conf["RESULTS_DIR"]) if conf.get("RESULTS_DIR") else None
     )
 
 

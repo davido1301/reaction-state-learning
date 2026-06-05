@@ -15,12 +15,12 @@ from chemtraj.representations.internal_coord import get_dihedrals
 from chemtraj.utils.io import dataframe_from_extxyz, read_config
 import yaml
 import seaborn as sns
-from chemtraj.analysis.lda import run_lda
-
+from chemtraj.analysis.lda import run_lda, print_lda_weights, plot_lda
 
 
 
 PATH_YAML = "src/chemtraj/configs/test.yaml"
+
 config = read_config(PATH_YAML)
 universe = mda.Universe(config.top,config.traj)
 protein_system = select_protein(config.top,config.traj)
@@ -28,24 +28,21 @@ residues = residues_near_reacting_atoms(
         universe=universe,
         reactive_selection=config.reactive_selection,
 )
-resid, resname = extract_res_id_and_name(residues)
 
+resid, resname = extract_res_id_and_name(residues)
 phi_angles = get_dihedrals(universe, resid) 
 
 # constructing df 
 df = dataframe_from_extxyz(config.db) 
-
 
 for residx, resnamex, phi_angle_value in zip(resid, resname, phi_angles.T):
     df[f"phi_res_{residx}_{resnamex}"] = phi_angle_value 
 
 phi_columns = [col for col in df.columns if col.startswith("phi_res_")]
 
-
 # Selection for LDA atm 
 X = df.iloc[:, 2:35].values # wonky
 y = df.iloc[:, 1].values
-
 le = LabelEncoder()
 y = le.fit_transform(y)
 # can catch artifacts otherwise bc periodic 
@@ -56,36 +53,16 @@ X_trig = np.concatenate([X_sin, X_cos], axis=1)
 
 lda, X_test, X_train, y_train = run_lda(X_trig, y)
 
+print(config.results_dir)
+filename = "lda_plot.png" 
+save_dir= config.results_dir / filename
 
-
-
-
-tmp_Df = pd.DataFrame(X_train, columns=['LDA Component 1','LDA Component 2'])
-tmp_Df['Class']=y_train
-
-sns.FacetGrid(tmp_Df, hue ="Class",
-              height = 6).map(plt.scatter,
-                              'LDA Component 1',
-                              'LDA Component 2')
-
-plt.legend(loc='upper right')
-plt.show()
+plot_lda(X_train, y_train, saving=True, results_dir=save_dir)
 
 
 phi_cols_trig = (
     [f"{col}_sin" for col in phi_columns] + 
     [f"{col}_cos" for col in phi_columns]
 )
-lda1_weights = pd.Series(
-    lda.scalings_[:, 0],
-    index=phi_cols_trig
-).sort_values(key=abs, ascending=False)
 
-print("Lda1 weights",lda1_weights)
-
-lda2_weights = pd.Series(
-        lda.scalings_[:, 1],
-        index=phi_cols_trig
-).sort_values(key=abs, ascending=False)
-
-print("LDA2 weights", lda2_weights)
+print_lda_weights(lda, phi_cols_trig)
