@@ -1,0 +1,5 @@
+DB : "data/processed/metad_10_labeled.extxyz"
+TOP : "data/unprocessed/metad_10.gro"
+TRAJ : "data/unprocessed/metad_10.xtc" 
+REACTIVE_SELECTION : "index 24 59 529" 
+RESULTS_DIR : "src/chemtraj/results/metad_10_test/"

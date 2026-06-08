@@ -17,15 +17,18 @@ from pathlib import Path
 DB = "data/processed/metad_10_labeled.extxyz"
 TOP = "data/unprocessed/metad_10.gro"
 TRAJ = "data/unprocessed/metad_10.xtc" 
+TRAJ = "data/unprocessed/combined_metad/all_walkers_no_water.xtc"
+TOP = "data/unprocessed/combined_metad/protein_GSSG.gro"
+DB = "data/processed/metad_all_labeled.extxyz"
 
-RESULTS_HIST = Path("src/chemtraj/results/histo_dihedrals_labeled/")
+RESULTS_HIST = Path("src/chemtraj/results/histo_dihedrals_labeled/all_metad/")
 
 universe = mda.Universe(TOP,TRAJ)
 protein_system = select_protein(TOP,TRAJ)
 
 ress = residues_near_reacting_atoms(
         universe=universe,
-        reactive_selection="index 24 59 526",
+        reactive_selection="index 41 59 526",
 )
 
 
@@ -61,7 +64,6 @@ print(phi_angles.shape)
 print(len(labels_df))
 print(len(id_res))
 print(id_res[0]) 
-exit()
 
 for resid, phi_angle_value in zip(id_res, phi_angles.T):
     labels_df[f"phi_res_{resid}"] = phi_angle_value 
@@ -73,7 +75,6 @@ plt.figure(figsize=(8,6))
 sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
 plt.title("Corr Heatmap")
 plt.show()
-exit()
 
 for feature in phi_cols:
     plt.figure(figsize=(6,4))
@@ -84,7 +85,7 @@ for feature in phi_cols:
     element="step",
     stat="density",
 )
-    filename= f"{feature}_histogram.png"
+    filename= f"{feature}_histogram_all_metad.png"
     save_path = RESULTS_HIST / filename
     plt.title(feature)
     plt.xlabel(f"Dihedral angle {feature}")
