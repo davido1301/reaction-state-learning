@@ -41,7 +41,7 @@ for residx, resnamex, phi_angle_value in zip(resid, resname, phi_angles.T):
 phi_columns = [col for col in df.columns if col.startswith("phi_res_")]
 
 # Selection for LDA atm 
-X = df.iloc[:, 2:35].values # wonky
+X = df.iloc[:, -len(resid):].values # wonky
 y = df.iloc[:, 1].values
 le = LabelEncoder()
 y = le.fit_transform(y)

@@ -11,7 +11,7 @@ def select_protein(top: Path, traj: Path, selection = "not resname SOL and not n
     protein_system = universe.select_atoms(selection)
     return protein_system
 
-def extract_res_id_and_name(residues) -> List[str]:
+def extract_res_id_and_name(residues) -> list[str]:
     """ Take residues and extraxt ids and names for further processing
     return 2 lists """ 
 

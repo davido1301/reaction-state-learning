@@ -9,11 +9,9 @@ from chemtraj.preprocessing.selection import select_protein
 # Getting the base data into a usable format
 # Labelling with criterion and converting to extxyz 
 
-OUTFILE = Path("data/processed/metad_all_labeled.extxyz")
-TOP = "data/unprocessed/metad_10.gro"
-TRAJ = "data/unprocessed/metad_10.xtc" 
-TRAJ = "data/unprocessed/combined_metad/all_walkers_no_water.xtc"
-TOP = "data/unprocessed/combined_metad/protein_GSSG.gro"
+OUTFILE = Path("data/processed/us_concatenated.extxyz")
+TOP = "data/unprocessed/us_-0.5.gro"
+TRAJ = "data/unprocessed/us_concatenated.xtc" 
 def label_criterion(universe) -> str: 
     """ Criterion is the distance between the S atoms 
         with a small tolerance for the transition state
@@ -22,7 +20,7 @@ def label_criterion(universe) -> str:
         d1 ~ d2 -- Transition state """
     # mind the index based counting starting from 0 
 
-    s1 = universe.select_atoms("index 41")[0]
+    s1 = universe.select_atoms("index 24")[0]
     s2 = universe.select_atoms("index 59")[0]
     cym = universe.select_atoms("index 526")[0]
     d1 = np.linalg.norm(cym.position - s1.position)
